@@ -15,28 +15,20 @@ import sys
 import os
 import random
 
-import pygame
-import numpy
-import argparse
+try:
+    import pygame
+    from pygame import Color, Rect, Surface
 
-pos_dict = {'A':0,
-            'B':1,
-            'C':2,
-            'D':3,
-            'E':4,
-            'F':5,
-            'G':6,
-            'H':7,
-            'I':8,
-            'J':9}
+    import numpy
+    import argparse
+except ImportError:
+    print 'Error, Missing Libraries'
+    sys.exit(0)
 
 players = []
 
 def main():
-    pygame.init()
-
     args = get_args()
-#    print args
 
     clear_screen()
 
@@ -57,8 +49,7 @@ def main():
     for item in players:
         game_list.append(item)
 
-    for number in range(len(game_list)):
-        print game_list[number]
+    Screen()
 
 def initialize_game(args):
     '''
@@ -66,10 +57,10 @@ def initialize_game(args):
     '''
     shipsizes = [5, 4, 3, 3, 2]
     for cp in players:
-        switch(cp.name)
+#        switch(cp.name)
         for item in shipsizes:
             cp.add_ship(item, args.auto)
-        print cp.grid
+#        print cp.grid
 
 def switch(player_num):
     '''
@@ -251,6 +242,27 @@ class Player:
                         return True
             return False
 
+class Screen:
+
+    def __init__(self):
+        pygame.init()
+        black  = (   0,   0,   0)
+        white  = ( 255, 255, 255)
+        green  = (   0, 255,   0)
+        red    = ( 255,   0,   0)
+        screen = pygame.display.set_mode([500,500])
+        done   = False
+        clock  = pygame.time.Clock()
+        pygame.display.set_caption('BattleShip')
+        while done == False:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    done = True
+            screen.fill(black)
+            pygame.display.flip()
+            clock.tick(20)
+
+        pygame.quit()
 
 
 if __name__=="__main__":
