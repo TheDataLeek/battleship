@@ -46,7 +46,7 @@ def main():
 
     initialize_game(args)
 
-    Screen(players)
+#    Screen(players)
 
 def initialize_game(args):
     '''
@@ -54,10 +54,10 @@ def initialize_game(args):
     '''
     shipsizes = [5, 4, 3, 3, 2]
     for cp in players:
-#        switch(cp.name)
+        switch(cp.name)
         for item in shipsizes:
             cp.add_ship(item, args.auto)
-#        print cp.grid
+        print cp.grid
 
 def switch(player_num):
     '''
@@ -271,6 +271,14 @@ class Screen:
                         gscr[row][entry] = 255
             grid_surface = pygame.surfarray.make_surface(gscr)
             screen.blit(grid_surface, (0,0))
+            player = player_list[1]
+            gscr = scipy.misc.imresize(player.grid, 10.0)
+            for row in range(len(gscr)):
+                for entry in range(len(gscr[0])):
+                    if gscr[row][entry] != 0:
+                        gscr[row][entry] = 255
+            grid_surface = pygame.surfarray.make_surface(gscr)
+            screen.blit(grid_surface, (0, 200))
             pygame.display.flip()
             clock.tick(10)
 
