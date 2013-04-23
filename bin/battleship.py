@@ -13,10 +13,11 @@ Ship Classes:
 
 import sys
 import os
-import numpy
-import argparse
+import random
 
 import pygame
+import numpy
+import argparse
 
 pos_dict = {'A':0,
             'B':1,
@@ -66,9 +67,9 @@ def initialize_game(args):
     shipsizes = [5, 4, 3, 3, 2]
     for cp in players:
         switch(cp.name)
-        print cp.grid
         for item in shipsizes:
-            cp.add_ship(item)
+            cp.add_ship(item, args.auto)
+        print cp.grid
 
 def switch(player_num):
     '''
@@ -104,6 +105,7 @@ def get_args():
     parser = argparse.ArgumentParser(description='Battleship, The Game!')
     parser.add_argument('-p', '--players', type=int, default=2, help='How many players')
     parser.add_argument('-g', '--gridsize', type=int, default=10, help='Grid Size')
+    parser.add_argument('-a', '--auto', action='store_true', default=False, help='Auto Place Ships Randomly?')
     args = parser.parse_args()
     return args
 
@@ -143,14 +145,32 @@ class Player:
                 self.guesses[y][x] = 'X'
         print self.guesses
 
-    def add_ship(self, size):
-        coord = raw_input('Please Enter Location for Ship with Size %i (Y:X:R): ' %size)
-        new_ship = self.Ship(size, coord, self.gridsize)
-        ship_conflict = new_ship.stack(self.grid)
-        while new_ship == None or ship_conflict == True:
-            coord = raw_input('Please Enter Location for Ship with Size %i (Y:X:R): ' %size)
-            new_ship = self.Ship(size, coord, self.gridsize)
-            ship_conflict = new_ship.stack(self.grid)
+    def get_rand_pos(self):
+        '''
+        Returns a random spot
+        '''
+        if random.randint(0,1) == 0:
+            ort = 'v'
+        else:
+            ort = 'h'
+        coord = '%i:%i:%s' %(random.randint(0, self.gridsize),
+                             random.randint(0, self.gridsize), ort)
+        return coord
+
+    def add_ship(self, size, auto):
+        if auto:
+            coord = self.get_rand_pos()
+        else:
+            coord = raw_input('Please Enter Location for Ship with Size %i (X:Y:R): ' %size)
+        new_ship      = self.Ship(size, coord, self.gridsize)
+        ship_conflict = new_ship.conflict(self.grid)
+        while ship_conflict == True:
+            if auto:
+                coord = self.get_rand_pos()
+            else:
+                coord = raw_input('Please Enter Location for Ship with Size %i (X:Y:R): ' %size)
+            new_ship      = self.Ship(size, coord, self.gridsize)
+            ship_conflict = new_ship.conflict(self.grid)
 
         [x, y, r] = coord.split(':')
         x = int(x)
@@ -163,7 +183,8 @@ class Player:
                     self.grid[y][x + number] = 1
 
         self.shiplist.append(new_ship)
-        print self.grid
+        if not auto:
+            print self.grid
 
 
     class Ship:
@@ -175,33 +196,12 @@ class Player:
             '''
             Initializes an Aircraft Carrier
             '''
-            self.hits = []
-            self.x    = int(coord.split(':')[0])
-            self.y    = int(coord.split(':')[1])
-            self.r    = coord.split(':')[2]
-            self.size = size
-
+            self.hits      = []
+            self.x         = int(coord.split(':')[0])
+            self.y         = int(coord.split(':')[1])
+            self.r         = coord.split(':')[2]
+            self.size      = size
             self.test_grid = gen_grid(gridsize)
-
-            if self.r == 'v':
-                try:
-                    for number in range(size):
-                        self.test_grid[self.y + number][self.x]
-                        self.hits.append('%i:%i' %(self.y, self.x))
-                except IndexError:
-                    print 'Invalid Location'
-                    return None
-            elif self.r == 'h':
-                try:
-                    for number in range(size):
-                        self.test_grid[self.y][self.x + number]
-                        self.hits.append('%i:%i' %(self.y, self.x))
-                except IndexError:
-                    print 'Invalid Location'
-                    return None
-            else:
-                print 'Invalid Location'
-                return None
 
         def register(self, x0, y0):
             '''
@@ -221,11 +221,28 @@ class Player:
                         return True
             return False
 
-        def stack(self, grid):
+        def conflict(self, grid):
             '''
             Determines if there's a conflict between two ships
             '''
-            for number in range(len(grid)):
+            if self.r == 'v':
+                try:
+                    for number in range(self.size):
+                        self.test_grid[self.y + number][self.x]
+                        self.hits.append('%i:%i' %(self.y, self.x))
+                except IndexError:
+                    return True
+            elif self.r == 'h':
+                try:
+                    for number in range(self.size):
+                        self.test_grid[self.y][self.x + number]
+                        self.hits.append('%i:%i' %(self.y, self.x))
+                except IndexError:
+                    return True
+            else:
+                return True
+
+            for number in range(self.size):
                 if self.r == 'v':
                     if grid[self.y + number][self.x] == 1:
                         return True
