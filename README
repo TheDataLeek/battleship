@@ -1,0 +1,83 @@
+NOTE: Have to change graph for each player shot at
+1. Start Game
+    a. OPTIONS
+        i. 1 or 2  or more player
+        ii. size of grid
+        iii. number of shots in a volley
+2. Populate Ship Grids
+    a. Player 1 populate
+        i. Display grid
+        ii. Ask to place Aircraft carrier
+            1. Starting location
+                a. Upper-left corner of ship
+                b. Declare horizontal or vertical alignment
+                c. check for invalid input
+                    i. must fit in board
+                        1. Is starting location in board
+                        2. is ending location in board
+                d. ask for new input if necessary
+            2. OPTION: Starting and ending location
+                a. check for invalid input
+                    i. is starting location in board
+                    ii. is ending location in board
+                    iii. must be vertical or horizontal
+                        1. check at least one index is the same
+                    iv. exactly 5 spaces
+                b. ask for new input if necessary
+            3. Populate ship grid with information
+        iii. Refresh grid
+        iv. Ask to place Battleship
+            1. Same process as Aircraft carrier
+                a. Additional check for no overlaps
+            2. 4 spaces
+        v. Refresh grid
+        vi. Ask to place Submarine
+            1. 3 spaces
+        vii. Refresh grid
+        viii. Ask to place Destroyer
+            1. 3 spaces
+        ix. Refresh grid
+        x. Ask to place PT Boat
+            1. 2 spaces
+        xi. Blank screen
+    b. Player 2 populate
+        i. Same process as Player 1
+3. Play
+    a. Player 1 Turn
+        i. Display P1 guess grid
+        ii. Ask for new shot
+        iii. Check for hit or miss with P2 ship grid
+            1. If hit
+                a. Is ship destroyed?
+                    i. Yes- declare what ship is destroyed
+                    ii. No - Display HIT
+            2. If miss
+                a. Display MISS
+        iv. Blank screen
+    b. Player 2 Turn
+        i. Display P2 guess grid
+        ii. Ask for new shot
+        iii. Check for hit or miss with P1 ship grid
+            1. If hit
+                a. Is ship destroyed?
+                    i. Yes- declare what ship is destroyed
+                    ii. No - Display HIT
+            2. If miss
+                a. Display MISS
+        iv. Blank screen
+        v. Check if P1 has hit 17 times
+            1. OPTION: Check to see if all opponent boats are in “dead” state.
+        vi. Check if P2 has hit 17 times
+        vii. If both have won - only one player can win because sequential shooting
+            1. Display both winners
+            2. Branch to End Game
+        viii. Else if one has won
+            1. Show winning graph
+            2. Branch to End game
+        ix. Else
+            1. branch to Play
+4. End Game
+    a. Display winner
+    b. Ask for replay
+        i. If yes, branch to Start game
+        ii. If no, exit program
