@@ -20,6 +20,7 @@ try:
     from pygame import Color, Rect, Surface
 
     import numpy
+    import scipy.misc
     import argparse
 except ImportError:
     print 'Error, Missing Libraries'
@@ -45,11 +46,7 @@ def main():
 
     initialize_game(args)
 
-    game_list = []
-    for item in players:
-        game_list.append(item)
-
-    Screen()
+    Screen(players)
 
 def initialize_game(args):
     '''
@@ -235,32 +232,47 @@ class Player:
 
             for number in range(self.size):
                 if self.r == 'v':
-                    if grid[self.y + number][self.x] == 1:
+                    if grid[self.y + number][self.x] > 0:
                         return True
                 elif self.r == 'h':
-                    if grid[self.y][self.x + number] == 1:
+                    if grid[self.y][self.x + number] > 0:
                         return True
             return False
 
 class Screen:
 
-    def __init__(self):
+    def __init__(self, player_list):
         pygame.init()
         black  = (   0,   0,   0)
         white  = ( 255, 255, 255)
         green  = (   0, 255,   0)
         red    = ( 255,   0,   0)
-        screen = pygame.display.set_mode([500,500])
+        screen = pygame.display.set_mode([550,550])
         done   = False
         clock  = pygame.time.Clock()
+        width  = 500 / player_list[0].gridsize
+        height = 500 / player_list[0].gridsize
+        margin = 5
         pygame.display.set_caption('BattleShip')
+
         while done == False:
+            for item in player_list:
+                if item.state == False:
+                    done = True
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     done = True
             screen.fill(black)
+            player = player_list[0]
+            gscr = scipy.misc.imresize(player.grid, 10.0)
+            for row in range(len(gscr)):
+                for entry in range(len(gscr[0])):
+                    if gscr[row][entry] != 0:
+                        gscr[row][entry] = 255
+            grid_surface = pygame.surfarray.make_surface(gscr)
+            screen.blit(grid_surface, (0,0))
             pygame.display.flip()
-            clock.tick(20)
+            clock.tick(10)
 
         pygame.quit()
 
