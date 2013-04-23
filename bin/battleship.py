@@ -45,7 +45,26 @@ def main():
         players.append(new_player)
 
     initialize_game(args)
+    
+    num_playing = len(players);
 
+
+    while still_going >= 2:
+        #Each player shoots
+        for player in players:
+            coord = raw_input("Choose target player id and coordinates of shot (P:X:Y): ")
+            [p,x,y] = coord.split(':')
+            while players[p].get_state or p > len(players) or p < 0:
+                coord = raw_input("Invalid Player Id: Choose another set for your shot: ")
+                [p, x, y] = coord.split(':')
+
+
+            player.shoot(p,x,y)
+        #Check if dead
+        num_playing = 0;
+        for p in players:
+            if p.get_state:
+                num_playing += 1
 #    Screen(players)
 
 def initialize_game(args):
@@ -114,11 +133,11 @@ class Player:
         self.name     = name
         self.state    = True
 
-    def shoot(self, pid, coord):
+    def shoot(self, pid, x , y):
         '''
         Shoot at specified player at specified coordinates
         '''
-        [x, y] = coord.split(':')
+
         target = players[pid]
         for item in target.shiplist:
             result = item.register(x, y)
@@ -174,6 +193,26 @@ class Player:
         if not auto:
             print self.grid
 
+    def get_state(self):
+
+        self.state = False
+
+        for s in shiplist:
+
+            ship_state = False
+
+            for item in s.hits:
+                if item != 0:
+                    flag = True
+
+            if flag:
+                ship_state =  True
+            else:
+                ship_state = False
+
+            self.state = self.state or ship_state
+            # End of for loop
+        return self.state
 
     class Ship:
         '''
