@@ -45,9 +45,6 @@ def start_game(args):
     '''
     num_playing = len(players);
 
-    print players[0].grid
-    print players[1].grid
-    raw_input()
     while num_playing >= 2:
         #Each player shoots
         for player in players:
@@ -55,6 +52,7 @@ def start_game(args):
             switch(player.name)
             print player.guesses
             # Display this player's guess grid
+#            p, x, y = get_coords(raw_input("Choose target player id and coordinates of shot (P:X:Y): "))
             coord = raw_input("Choose target player id and coordinates of shot (P:X:Y): ")
             p = int(coord.split(':')[0])
             x = int(coord.split(':')[1])
@@ -85,6 +83,18 @@ def start_game(args):
             if p.get_state:
                 num_playing += 1
 
+def get_coords(usr_string):
+    '''
+    Gets user input and returns coordinates
+    '''
+    try:
+        p = int(usr_string.split(':')[0])
+        x = int(usr_string.split(':')[1])
+        y = int(usr_string.split(':')[2])
+        return p, x, y
+    except ValueError:
+        return False
+
 def establish_players(args):
     '''
     Determines players/adds to listing
@@ -110,6 +120,8 @@ def initialize_game(args):
         for item in shipsizes:
             cp.add_ship(item, args.auto)
         print cp.grid
+        raw_input("Continue")
+    clear_screen()
 
 def switch(player_num):
     '''
@@ -184,6 +196,7 @@ class Player:
                 print result
                 self.guesses[y][x] = 1
         print 'Miss!'
+
     def get_rand_pos(self):
         '''
         Returns a random spot
