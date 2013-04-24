@@ -13,6 +13,8 @@ class TestBattleship(unittest.TestCase):
         Creates a couple players/games
         '''
         self.player1 = battleship.Player(10, 'one')
+        self.player2 = battleship.Player(10, 'two')
+        self.player3 = battleship.Player(10, 'three')
 
     def test_gen_grid(self):
         '''
@@ -38,6 +40,14 @@ class TestBattleship(unittest.TestCase):
         assert(sample_ship.y == 1)
         assert(sample_ship.r == 'v')
         assert(len(sample_ship.test_grid) == 10)
+
+    def test_add_ship(self):
+        '''
+        Tests a couple different player/ship combos
+        '''
+        self.player1.add_ship(3, True)
+        self.player2.add_ship(3, True)
+        self.player3.add_ship(3, True)
 
 if __name__ == "__main__":
     unittest.main()

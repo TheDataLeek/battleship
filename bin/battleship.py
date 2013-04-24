@@ -33,19 +33,16 @@ def main():
 
     clear_screen()
 
-    if args.players != 2:
-        ans = raw_input('Error, AI not enabled or invalid player count... Continue? (y/n) ')
-        if ans.lower() == 'y':
-            args.players = 2
-        else:
-            sys.exit(0)
-
-    for number in range(args.players):
-        new_player = Player(args.gridsize, number)
-        players.append(new_player)
+    establish_players(args)
 
     initialize_game(args)
-    
+
+    start_game(args)
+
+def start_game(args):
+    '''
+    Starts gameplay
+    '''
     num_playing = len(players);
 
     print players[0].grid
@@ -87,7 +84,21 @@ def main():
         for p in players:
             if p.get_state:
                 num_playing += 1
-#    Screen(players)
+
+def establish_players(args):
+    '''
+    Determines players/adds to listing
+    '''
+    if args.players < 2:
+        ans = raw_input('Error, AI not enabled or invalid player count... Continue? (y/n) ')
+        if ans.lower() == 'y':
+            args.players = 2
+        else:
+            sys.exit(0)
+
+    for number in range(args.players):
+        new_player = Player(args.gridsize, number)
+        players.append(new_player)
 
 def initialize_game(args):
     '''
@@ -215,25 +226,19 @@ class Player:
             print self.grid
 
     def get_state(self):
-
-        self.state = False
-
-        for s in shiplist:
-
-            ship_state = False
-
-            for item in s.hits:
-                if item != 0:
-                    flag = True
-
-            if flag:
-                ship_state =  True
-            else:
+        '''
+        Refreshes state and returns
+        '''
+        if not self.state:
+            return self.state
+        else:
+            for ship in self.shiplist:
                 ship_state = False
-
-            self.state = self.state or ship_state
-            # End of for loop
-        return self.state
+                for item in ship.hits:
+                    if item != 0:
+                        ship_state = True
+                self.state = ship_state
+            return self.state
 
     class Ship:
         '''
@@ -303,7 +308,6 @@ class Player:
             return False
 
 class Screen:
-
     def __init__(self, player_list):
         pygame.init()
         black  = (   0,   0,   0)
