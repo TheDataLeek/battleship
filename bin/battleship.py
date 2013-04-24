@@ -14,6 +14,7 @@ Ship Classes:
 import sys
 import os
 import random
+import time
 
 try:
     import pygame
@@ -216,7 +217,12 @@ class Player:
             coord = raw_input('Please Enter Location for Ship with Size %i (X:Y:R): ' %size)
         new_ship      = self.Ship(size, coord, self.gridsize)
         ship_conflict = new_ship.conflict(self.grid)
+        start_time = time.time()
         while ship_conflict == True:
+            current_time = time.time()
+            if current_time - start_time > 10:
+                print("Timout Error")
+                sys.exit(0)
             if auto:
                 coord = self.get_rand_pos()
             else:
