@@ -40,6 +40,21 @@ def main():
 
     start_game(args)
 
+    end_game(args)
+
+def end_game(args):
+    '''
+    Declares Winner and Ends Game
+    '''
+    clear_screen()
+    for player in players:
+        if player.get_state:
+            print('Congratulations Player %i! You have won!' %player.name)
+
+    for player in players:
+        print("Player %i's ships: %s\nPlayer %i's guesses: %s"
+                %(player.name, str(player.grid), str(player.guesses)))
+
 def start_game(args):
     '''
     Starts gameplay
@@ -51,31 +66,9 @@ def start_game(args):
         for player in players:
             # Display This player must play
             switch(player.name)
-            print player.guesses
+            print(player.guesses)
             # Display this player's guess grid
-#            p, x, y = get_coords(raw_input("Choose target player id and coordinates of shot (P:X:Y): "))
-            coord = raw_input("Choose target player id and coordinates of shot (P:X:Y): ")
-            p = int(coord.split(':')[0])
-            x = int(coord.split(':')[1])
-            y = int(coord.split(':')[2])
-            while (not players[p].get_state) or p > len(players) or p < 0:
-                coord = raw_input("Invalid Player Id: Choose another set for your shot: ")
-                p = int(coord.split(':')[0])
-                x = int(coord.split(':')[1])
-                y = int(coord.split(':')[2])
-
-            while p == player.name:
-                coord = raw_input("Pew Pew Pew! You just tried to shoot yourself: Choose another set for your shot: ")
-                p = int(coord.split(':')[0])
-                x = int(coord.split(':')[1])
-                y = int(coord.split(':')[2])
-
-            while x < 0 or x > 9 or y < 0 or y > 9:
-                coord = raw_input("Invalid Coordinates: Choose another set for your shot: ")
-                p = int(coord.split(':')[0])
-                x = int(coord.split(':')[1])
-                y = int(coord.split(':')[2])
-
+            p, x, y, = get_coords(player, args)
             player.shoot(p,x,y)
             raw_input("Press enter for next player")
         #Check if dead
@@ -84,7 +77,7 @@ def start_game(args):
             if p.get_state:
                 num_playing += 1
 
-def get_coords(usr_string):
+def split_coords(usr_string):
     '''
     Gets user input and returns coordinates
     '''
@@ -94,7 +87,31 @@ def get_coords(usr_string):
         y = int(usr_string.split(':')[2])
         return p, x, y
     except ValueError:
-        return False
+        return 0, -1, -1
+
+def get_coords(player, args):
+    '''
+    Validates proper shooting input
+    '''
+    p, x, y = split_coords(
+            raw_input(
+                "Choose target player id and coordinates of shot (P:X:Y): "))
+    while not players[p].get_state or p > len(players) or p < 0:
+        p, x, y = split_coords(
+                    raw_input(
+                        "Invalid Player Id: Choose another set for your shot: "))
+    while p == player.name:
+        p, x, y = split_coords(
+                    raw_input(
+                          "Pew Pew Pew! You just tried to shoot yourself: Choose another set for your shot: "))
+
+    while (x < 0 or x > (args.gridsize - 1) or
+            y < 0 or y > (args.gridsize - 1)):
+        p, x, y = split_coords(
+                    raw_input(
+                          "Invalid Coordinates: Choose another set for your shot: "))
+
+    return p, x, y
 
 def establish_players(args):
     '''
