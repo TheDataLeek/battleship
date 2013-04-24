@@ -48,18 +48,40 @@ def main():
     
     num_playing = len(players);
 
-
-    while still_going >= 2:
+    print players[0].grid
+    print players[1].grid
+    raw_input()
+    while num_playing >= 2:
         #Each player shoots
         for player in players:
+            # Display This player must play
+            switch(player.name)
+            print player.guesses
+            # Display this player's guess grid
             coord = raw_input("Choose target player id and coordinates of shot (P:X:Y): ")
-            [p,x,y] = coord.split(':')
-            while players[p].get_state or p > len(players) or p < 0:
+            p = int(coord.split(':')[0])
+            x = int(coord.split(':')[1])
+            y = int(coord.split(':')[2])
+            while (not players[p].get_state) or p > len(players) or p < 0:
                 coord = raw_input("Invalid Player Id: Choose another set for your shot: ")
-                [p, x, y] = coord.split(':')
+                p = int(coord.split(':')[0])
+                x = int(coord.split(':')[1])
+                y = int(coord.split(':')[2])
 
+            while p == player.name:
+                coord = raw_input("Pew Pew Pew! You just tried to shoot yourself: Choose another set for your shot: ")
+                p = int(coord.split(':')[0])
+                x = int(coord.split(':')[1])
+                y = int(coord.split(':')[2])
+
+            while x < 0 or x > 9 or y < 0 or y > 9:
+                coord = raw_input("Invalid Coordinates: Choose another set for your shot: ")
+                p = int(coord.split(':')[0])
+                x = int(coord.split(':')[1])
+                y = int(coord.split(':')[2])
 
             player.shoot(p,x,y)
+            raw_input("Press enter for next player")
         #Check if dead
         num_playing = 0;
         for p in players:
@@ -143,15 +165,14 @@ class Player:
             result = item.register(x, y)
             if result == True:
                 print 'Hit!'
-                self.guesses[y][x] = 'X'
-            elif result == False:
-                print 'Miss!'
                 self.guesses[y][x] = 1
+                return
+            elif result == False:
+                self.guesses[y][x] = -1
             else:
                 print result
-                self.guesses[y][x] = 'X'
-        print self.guesses
-
+                self.guesses[y][x] = 1
+        print 'Miss!'
     def get_rand_pos(self):
         '''
         Returns a random spot
@@ -229,24 +250,27 @@ class Player:
             self.r         = coord.split(':')[2]
             self.size      = size
             self.test_grid = gen_grid(gridsize)
+            self.state = True
 
         def register(self, x0, y0):
             '''
             Registers a hit (or a miss)
             '''
-            sunk = 'You have sunk my ship! (%i)' %self.size
-            for item in self.hits:
-                if item == ('%i:%i' %(y0, x0)):
-                    item = 0
-                    flag = True
-                    for item in self.hits:
-                        if item != 0:
-                            flag = False
-                    if flag:
-                        return sunk
-                    else:
-                        return True
-            return False
+            hit_confirm = False
+            for i in range(len(self.hits)):
+                if self.hits[i] == ('%i:%i' %(y0, x0)):
+                    self.hits[i] = 0
+                    hit_confirm = True
+
+            if hit_confirm == True:
+                self.state = False
+                for item in self.hits:
+                    if item != 0:
+                        self.state = True
+                if self.state == False:
+                    print 'You have sunk my ship! (%i)' %self.size
+            
+            return hit_confirm
 
         def conflict(self, grid):
             '''
@@ -256,14 +280,14 @@ class Player:
                 try:
                     for number in range(self.size):
                         self.test_grid[self.y + number][self.x]
-                        self.hits.append('%i:%i' %(self.y, self.x))
+                        self.hits.append('%i:%i' %(self.y + number, self.x))
                 except IndexError:
                     return True
             elif self.r == 'h':
                 try:
                     for number in range(self.size):
                         self.test_grid[self.y][self.x + number]
-                        self.hits.append('%i:%i' %(self.y, self.x))
+                        self.hits.append('%i:%i' %(self.y, self.x + number))
                 except IndexError:
                     return True
             else:
