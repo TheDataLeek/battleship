@@ -17,6 +17,8 @@ import random
 import time
 
 try:
+    import battleshipAI
+
     import pygame
     from pygame import Color, Rect, Surface
 
@@ -62,16 +64,16 @@ def start_game(args):
     num_playing = len(players);
 
     while num_playing >= 2:
-        #Each player shoots
         for player in players:
-            # Display This player must play
             switch(player.name)
             print(player.guesses)
-            # Display this player's guess grid
-            p, x, y, = get_coords(player, args)
-            player.shoot(p,x,y)
-            raw_input("Press enter for next player")
-        #Check if dead
+            if player.ai:
+                player.ai.shoot(players)
+            else:
+                p, x, y, = get_coords(player, args)
+                player.shoot(p,x,y)
+            clear_screen()
+            #raw_input("Press enter for next player")
         num_playing = 0;
         for p in players:
             if p.get_state:
@@ -117,27 +119,23 @@ def establish_players(args):
     '''
     Determines players/adds to listing
     '''
-    if args.players < 2:
-        ans = raw_input('Error, AI not enabled or invalid player count... Continue? (y/n) ')
-        if ans.lower() == 'y':
-            args.players = 2
-        else:
-            sys.exit(0)
-
     for number in range(args.players):
         new_player = Player(args.gridsize, number)
         players.append(new_player)
+    if args.simulation:
+        for player in players:
+            player.ai = battleshipAI.BattleshipAI(player)
 
 def initialize_game(args):
     '''
     Sets up the board for the player
     '''
     shipsizes = [5, 4, 3, 3, 2]
-    for cp in players:
-        switch(cp.name)
+    for current_player in players:
+        switch(current_player.name)
         for item in shipsizes:
-            cp.add_ship(item, args.auto)
-        print cp.grid
+            current_player.add_ship(item, args.auto)
+        print current_player.grid
         raw_input("Continue")
     clear_screen()
 
@@ -145,9 +143,10 @@ def switch(player_num):
     '''
     Clears screen and holds for player (player_num)
     '''
-    clear_screen()
-    text = 'PLAYER %i PLEASE CONTINUE' %player_num
-    raw_input(text)
+    if not players[player_num].ai:
+        clear_screen()
+        text = 'PLAYER %i PLEASE CONTINUE' %player_num
+        raw_input(text)
 
 def clear_screen():
     '''
@@ -176,6 +175,7 @@ def get_args():
     parser.add_argument('-p', '--players', type=int, default=2, help='How many players')
     parser.add_argument('-g', '--gridsize', type=int, default=10, help='Grid Size')
     parser.add_argument('-a', '--auto', action='store_true', default=False, help='Auto Place Ships Randomly?')
+    parser.add_argument('-s', '--simulation', action='store_true', default=False, help='Make all players AI?')
     args = parser.parse_args()
     return args
 
@@ -195,6 +195,7 @@ class Player:
         self.shiplist = []
         self.name     = name
         self.state    = True
+        self.ai       = False
 
     def shoot(self, pid, x , y):
         '''
