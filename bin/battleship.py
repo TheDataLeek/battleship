@@ -54,8 +54,10 @@ def end_game(args):
             print('Congratulations Player %i! You have won!' %player.name)
 
     for player in players:
-        print("Player %i's ships: %s\nPlayer %i's guesses: %s"
-                %(player.name, str(player.grid), str(player.guesses)))
+        print("Player %i's ships:" %player.name)
+        print(player.grid)
+        print("Player %i's guesses:" %player.name)
+        print(player.guesses)
 
 def start_game(args):
     '''
@@ -64,6 +66,10 @@ def start_game(args):
     num_playing = len(players);
 
     while num_playing >= 2:
+        num_playing = 0;
+        for p in players:
+            if p.get_state():
+                num_playing += 1
         for player in players:
             switch(player.name)
             print(player.guesses)
@@ -74,10 +80,6 @@ def start_game(args):
                 player.shoot(p,x,y)
             clear_screen()
             #raw_input("Press enter for next player")
-        num_playing = 0;
-        for p in players:
-            if p.get_state:
-                num_playing += 1
 
 def split_coords(usr_string):
     '''
