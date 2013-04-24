@@ -13,8 +13,17 @@ class TestBattleship(unittest.TestCase):
         Creates a couple players/games
         '''
         self.player1 = battleship.Player(10, 'one')
+
         self.player2 = battleship.Player(10, 'two')
+
         self.player3 = battleship.Player(10, 'three')
+        self.player3.add_ship(5, True)
+        self.player3.add_ship(3, True)
+        self.player3.add_ship(9, True)
+        self.player3.add_ship(8, True)
+        self.player3.add_ship(1, True)
+        self.player3.add_ship(2, True)
+        self.player3.add_ship(7, True)
 
     def test_gen_grid(self):
         '''
@@ -47,7 +56,24 @@ class TestBattleship(unittest.TestCase):
         '''
         self.player1.add_ship(3, True)
         self.player2.add_ship(3, True)
+
         self.player3.add_ship(3, True)
+        self.player3.add_ship(5, True)
+        self.player3.add_ship(3, True)
+        self.player3.add_ship(9, True)
+        self.player3.add_ship(8, True)
+        self.player3.add_ship(1, True)
+        self.player3.add_ship(2, True)
+        self.player3.add_ship(7, True)
+
+    def test_get_coords(self):
+        assert(battleship.get_coords('sad') == False)
+        assert(battleship.get_coords('0:4:2') == (0, 4, 2))
+        assert(battleship.get_coords('A:0:3') == False)
+        assert(battleship.get_coords('5:5:5') == (5, 5, 5))
+
+    def test_get_state(self):
+        assert(self.player3.get_state() == True)
 
 if __name__ == "__main__":
     unittest.main()
