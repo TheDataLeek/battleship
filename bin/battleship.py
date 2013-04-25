@@ -210,7 +210,8 @@ class Player:
                 self.guesses[y][x] = 1
                 return None
             elif result == False:
-                self.guesses[y][x] = -1
+                if self.guesses[y][x] == 0:
+                    self.guesses[y][x] = -1
             else:
                 self.guesses[y][x] = 1
                 return None
