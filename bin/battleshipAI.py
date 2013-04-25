@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import random
+import sys
 
 class BattleshipAI:
 
@@ -12,6 +13,7 @@ class BattleshipAI:
         self.gridsize = player.gridsize
         self.guesses  = player.guesses
         self.grid     = player.grid
+        self.player   = player
 
     def get_rand_spot(self, gridsize):
         '''
@@ -42,7 +44,13 @@ class BattleshipAI:
         target = playerlist[p]
         for item in target.shiplist:
             result = item.register(x, y)
-            if result:
+            if result == True:
                 self.guesses[y][x] = 1
-            elif not result:
+                self.player.guesses[y][x] = 1
+            elif result == False:
                 self.guesses[y][x] = -1
+                self.player.guesses[y][x] = -1
+            else:
+                print result
+                self.guesses[y][x] = 1
+                self.player.guesses[y][x] = 1

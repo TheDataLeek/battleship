@@ -73,13 +73,13 @@ def start_game(args):
         for player in players:
             switch(player.name)
             print(player.guesses)
-            if player.ai:
+            if player.ai != None:
                 player.ai.shoot(players)
             else:
                 p, x, y, = get_coords(player, args)
                 player.shoot(p,x,y)
             clear_screen()
-            #raw_input("Press enter for next player")
+#            raw_input("Press enter for next player")
 
 def split_coords(usr_string):
     '''
@@ -197,7 +197,7 @@ class Player:
         self.shiplist = []
         self.name     = name
         self.state    = True
-        self.ai       = False
+        self.ai       = None
 
     def shoot(self, pid, x , y):
         '''
@@ -210,7 +210,6 @@ class Player:
             if result == True:
                 print 'Hit!'
                 self.guesses[y][x] = 1
-                return
             elif result == False:
                 self.guesses[y][x] = -1
             else:
