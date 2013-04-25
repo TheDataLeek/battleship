@@ -102,7 +102,8 @@ def start_game(args):
                 switch(player.name)
                 print('Available Grids')
                 for item in player.guesses:
-                    print item.guesses
+                    if item.pid != player.name:
+                        print item.guesses
                 if player.ai != None:
                     player.ai.shoot(players)
                 else:
