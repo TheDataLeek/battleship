@@ -408,13 +408,12 @@ class Player:
                         return True
                     try:
                         for dom in range(-1,2):
-                            for ran in range(-1, 2):
-                                current_x = self.x + dom
-                                current_y = self.y + number + ran
-                                if grid[current_y][current_x] > 0:
-                                    if ('%i:%i' %(current_y, current_x)) not in self.hits:
-                                        return True
-                    except:
+                            current_x = self.x + dom
+                            current_y = self.y + number - 1
+                            if grid[current_y][current_x] > 0:
+                                if ('%i:%i' %(current_y, current_x)) not in self.hits:
+                                    return True
+                    except IndexError:
                         pass
                 elif self.r == 'h':
                     if number == self.size:
@@ -422,13 +421,12 @@ class Player:
                     elif grid[self.y][self.x + number] > 0:
                         return True
                     try:
-                        for ran in range(-1,2):
-                            for dom in range(-1, 2):
-                                current_x = self.x + number + dom
-                                current_y = self.y + ran
-                                if grid[current_y][current_x] > 0:
-                                    if ('%i:%i' %(current_y, current_x)) not in self.hits:
-                                        return True
+                        for ran in range(-1,1):
+                            current_x = self.x + number - 1
+                            current_y = self.y + ran
+                            if grid[current_y][current_x] > 0:
+                                if ('%i:%i' %(current_y, current_x)) not in self.hits:
+                                    return True
                     except IndexError:
                         pass
             return False

@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
 import random
-import sys
-import time
 
 class BattleshipAI:
+    '''
+    AI for Battleship
+    '''
 
     def __init__(self, player):
         '''
