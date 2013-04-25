@@ -19,10 +19,7 @@ import time
 try:
     import battleshipAI
 
-#    import pygame
-
     import numpy
-#    import scipy.misc
     import argparse
 except ImportError:
     print 'Error, Missing Libraries'
@@ -32,34 +29,116 @@ players = []
 
 def main():
     args = get_args()
+    clear_screen()
+    establish_players(args)
+    initialize_game(args)
+    start_game(args)
+    end_game(args)
 
+def get_args():
+    '''
+    Gets user input from command line
+    :returns: argument dictionary
+    '''
+    parser = argparse.ArgumentParser(description='Battleship, The Game!')
+    parser.add_argument('-p', '--players', type=int, default=2, help='How many players')
+    parser.add_argument('-g', '--gridsize', type=int, default=10, help='Grid Size')
+    parser.add_argument('-a', '--auto', action='store_true', default=False, help='Auto Place Ships Randomly?')
+    parser.add_argument('-s', '--simulation', action='store_true', default=False, help='Make all players AI?')
+    parser.add_argument('-l', '--listing', type=str, nargs='+', default=None, help='List of players')
+    parser.add_argument('-w', '--winner', action='store_false', default=True, help='Display only winning stats')
+    parser.add_argument('-f', '--filename', type=str, default=None, help='File to write results')
+    args = parser.parse_args()
+    if args.listing: # Sets playercount to match listing in order to prevent collisions
+        args.players = len(args.listing)
+    return args
+
+def clear_screen():
+    '''
+    Clears the screen and readies for the next state
+    '''
+    os.system('clear') # Simple os.system call
+
+def establish_players(args):
+    '''
+    Determines players/adds to listing
+    :param args: argument dictionary
+    '''
+    for number in range(args.players):                                          # Create player for the number of specified players
+        new_player = Player(args.gridsize, number)
+        players.append(new_player)                                              # Add the player to global player list
+        if args.listing:                                                        # Setup AI for players depending on listing
+            if args.listing[number] == 'a':
+                players[number].ai = battleshipAI.BattleshipAI(players[number])
+            elif args.listing[number] != 'h':                                   # This will die with invalid playertype
+                print('UserWarning, Invalid PlayerType')
+                sys.exit(0)
+    for item in players:                                                        # Create a seperate guess grid per player for each player. These
+        item.create_guess_grids()                                               # guess grids are stored in an array for that player
+    if args.simulation:                                                         # If simulation was added, overwrite all playerAI with a new AI, regardless
+        for player in players:                                                  # of specification
+            player.ai = battleshipAI.BattleshipAI(player)
+
+def initialize_game(args):
+    '''
+    Sets up the board for the player
+    :param args: argument dictionary
+    '''
+    helpstring = "Please input coordinates like 'x:y:r' where r is either h or v for horizontal or vertical"
+    shipsizes = [5, 4, 3, 3, 2]
+    for current_player in players:                   # Iterate through players and create their ships
+        switch(current_player.name)                  # Switch to the current player to prevent cheating
+        if not current_player.ai:                    # Print help for current (human) player
+            print(helpstring)
+        for item in shipsizes:                       # Create new Ship and possibly autoplace
+            current_player.add_ship(item, args.auto)
+        print current_player.grid                    # After ships are placed, print the player's ship grid
+        raw_input("Continue")
     clear_screen()
 
-    establish_players(args)
-
-    initialize_game(args)
-
-    start_game(args)
-
-    end_game(args)
+def start_game(args):
+    '''
+    Starts gameplay
+    :param args: argument dictionary
+    '''
+    num_playing = len(players);                              # Establish initial playercount
+    while num_playing >= 2:                                  # And continue playing until everyone save one dies
+        for player in players:
+            if player.get_state():                           # If the player is still alive,
+                switch(player.name)                          # let them take their turn
+                print('Available Grids')                     # Display all available enemy grids to shoot
+                for item in player.guesses:
+                    if item.pid != player.name:
+                        print item.guesses
+                if player.ai != None:                        # If the player has AI, use that to shoot
+                    player.ai.shoot(players)
+                else:                                        # Otherwise let them pick coordinates
+                    p, x, y, = get_coords(player, args)
+                    player.shoot(p,x,y)
+                    raw_input('Press enter for next player')
+        num_playing = 0;
+        for p in players:                                    # Establish new playercount. If this is 1, quit
+            if p.get_state():
+                num_playing += 1
 
 def end_game(args):
     '''
     Declares Winner and Ends Game
+    :param args: argument dictionary
     '''
     clear_screen()
-    for player in players:
+    for player in players: # Display Winner's Info
         if player.get_state():
             print('Congratulations Player %i! You have won!' %player.name)
 
     for player in players:
-        if args.winner:
+        if args.winner: # If winner flag, just display winner's info
             if player.get_state():
                 print_grids(player)
         else:
             print_grids(player)
 
-        if args.filename:
+        if args.filename: # If a filename was supplied, write output to that name
             wfile = open(args.filename, 'w')
             for player in players:
                 if player.get_state():
@@ -70,6 +149,8 @@ def end_game(args):
 def format_grids(player):
     '''
     Prints designated player grids
+    :param player: Player() class object
+    :returns: formatted string
     '''
     string = ''
     string += ("Player %i's ships:\n" %player.name)
@@ -83,6 +164,7 @@ def format_grids(player):
 def print_grids(player):
     '''
     Prints designated player grids
+    :param player: Player() class object
     '''
     print("Player %i's ships:" %player.name)
     print(player.grid)
@@ -90,36 +172,15 @@ def print_grids(player):
     for item in player.guesses:
         print item.guesses
 
-def start_game(args):
-    '''
-    Starts gameplay
-    '''
-    num_playing = len(players);
-
-    while num_playing >= 2:
-        for player in players:
-            if player.get_state():
-                switch(player.name)
-                print('Available Grids')
-                for item in player.guesses:
-                    if item.pid != player.name:
-                        print item.guesses
-                if player.ai != None:
-                    player.ai.shoot(players)
-                else:
-                    p, x, y, = get_coords(player, args)
-                    player.shoot(p,x,y)
-                    raw_input('Press enter for next player')
-        num_playing = 0;
-        for p in players:
-            if p.get_state():
-                num_playing += 1
-
 def split_coords(usr_string):
     '''
     Gets user input and returns coordinates
+    :param usr_string: formatted coordinate string
+    :returns: p -- player ID
+              x -- X coordinate
+              y -- Y coordinate
     '''
-    try:
+    try: # Try to format string, die if failure
         p = int(usr_string.split(':')[0])
         x = int(usr_string.split(':')[1])
         y = int(usr_string.split(':')[2])
@@ -130,80 +191,47 @@ def split_coords(usr_string):
 def get_coords(player, args):
     '''
     Validates proper shooting input
+    :param player: Player() class object
+    :param args: argument dictionary
+    :returns: p -- player ID
+              x -- X coordinate
+              y -- Y coordinate
     '''
-    p, x, y = split_coords(
+    p, x, y = split_coords(  # Get initial user input
             raw_input(
                 "Choose target player id and coordinates of shot (P:X:Y): "))
     while not players[p].get_state or p > len(players) or p < 0:
-        p, x, y = split_coords(
+        p, x, y = split_coords( # If the player is dead, or has an invalid pid, try again
                     raw_input(
                         "Invalid Player Id: Choose another set for your shot: "))
     while p == player.name:
-        p, x, y = split_coords(
+        p, x, y = split_coords( # If pid is player's pid, try again
                     raw_input(
                           "Pew Pew Pew! You just tried to shoot yourself: Choose another set for your shot: "))
 
     while (x < 0 or x > (args.gridsize - 1) or
             y < 0 or y > (args.gridsize - 1)):
-        p, x, y = split_coords(
+        p, x, y = split_coords( # If the (x,y) position is outside the grid, try again
                     raw_input(
                           "Invalid Coordinates: Choose another set for your shot: "))
 
     return p, x, y
 
-def establish_players(args):
-    '''
-    Determines players/adds to listing
-    '''
-    for number in range(args.players):
-        new_player = Player(args.gridsize, number)
-        players.append(new_player)
-        if args.listing:
-            if args.listing[number] == 'a':
-                players[number].ai = battleshipAI.BattleshipAI(players[number])
-            elif args.listing[number] != 'h':
-                print('UserWarning, Invalid PlayerType')
-                sys.exit(0)
-    for item in players:
-        item.create_guess_grids()
-    if args.simulation:
-        for player in players:
-            player.ai = battleshipAI.BattleshipAI(player)
-
-def initialize_game(args):
-    '''
-    Sets up the board for the player
-    '''
-    shipsizes = [5, 4, 3, 3, 2]
-    for current_player in players:
-        switch(current_player.name)
-        print("Please input coordinates like 'x:y:r' where r is either h or v for horizontal or vertical")
-        for item in shipsizes:
-            current_player.add_ship(item, args.auto)
-        print current_player.grid
-        if not args.auto:
-            raw_input("Continue")
-        raw_input("Continue")
-    clear_screen()
-
 def switch(player_num):
     '''
     Clears screen and holds for player (player_num)
+    :param player_num: PID for player to switch to
     '''
-    if not players[player_num].ai:
+    if not players[player_num].ai: # First double-check that this isn't an AI
         clear_screen()
         text = 'PLAYER %i PLEASE CONTINUE' %player_num
         raw_input(text)
 
-def clear_screen():
-    '''
-    Clears the screen and readies for the next state
-    '''
-    os.system('clear')
-
 def gen_grid(size):
     '''
     Creates a 10x10 grid and returns
+    :param size: Integer size of grid
+    :returns: numpy.array() object (2D)
     '''
     a_grid = []
     for row in range(size):
@@ -213,23 +241,6 @@ def gen_grid(size):
         a_grid.append(row)
     grid = numpy.array(a_grid)
     return grid
-
-def get_args():
-    '''
-    Gets user input from command line
-    '''
-    parser = argparse.ArgumentParser(description='Battleship, The Game!')
-    parser.add_argument('-p', '--players', type=int, default=2, help='How many players')
-    parser.add_argument('-g', '--gridsize', type=int, default=10, help='Grid Size')
-    parser.add_argument('-a', '--auto', action='store_true', default=False, help='Auto Place Ships Randomly?')
-    parser.add_argument('-s', '--simulation', action='store_true', default=False, help='Make all players AI?')
-    parser.add_argument('-l', '--listing', type=str, nargs='+', default=None, help='List of players')
-    parser.add_argument('-w', '--winner', action='store_false', default=True, help='Display only winning stats')
-    parser.add_argument('-f', '--filename', type=str, default=None, help='File to write results')
-    args = parser.parse_args()
-    if args.listing:
-        args.players = len(args.listing)
-    return args
 
 class Player:
     '''
@@ -434,57 +445,14 @@ class Player:
             return False
 
 class Guesses:
-    '''
-    Guessing Grid Class
-    '''
     def __init__(self, size, pid):
+        '''
+        Guessing Grid Class
+        :param size: Size of grid
+        :param pid: player for which the grid belongs
+        '''
         self.pid     = pid
         self.guesses = gen_grid(size)
-
-class Screen:
-    def __init__(self, player_list):
-        pygame.init()
-        black  = (   0,   0,   0)
-        white  = ( 255, 255, 255)
-        green  = (   0, 255,   0)
-        red    = ( 255,   0,   0)
-        screen = pygame.display.set_mode([550,550])
-        done   = False
-        clock  = pygame.time.Clock()
-        width  = 500 / player_list[0].gridsize
-        height = 500 / player_list[0].gridsize
-        margin = 5
-        pygame.display.set_caption('BattleShip')
-
-        while done == False:
-            for item in player_list:
-                if item.state == False:
-                    done = True
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    done = True
-            screen.fill(black)
-            player = player_list[0]
-            gscr = scipy.misc.imresize(player.grid, 10.0)
-            for row in range(len(gscr)):
-                for entry in range(len(gscr[0])):
-                    if gscr[row][entry] != 0:
-                        gscr[row][entry] = 255
-            grid_surface = pygame.surfarray.make_surface(gscr)
-            screen.blit(grid_surface, (0,0))
-            player = player_list[1]
-            gscr = scipy.misc.imresize(player.grid, 10.0)
-            for row in range(len(gscr)):
-                for entry in range(len(gscr[0])):
-                    if gscr[row][entry] != 0:
-                        gscr[row][entry] = 255
-            grid_surface = pygame.surfarray.make_surface(gscr)
-            screen.blit(grid_surface, (0, 200))
-            pygame.display.flip()
-            clock.tick(10)
-
-        pygame.quit()
-
 
 if __name__=="__main__":
     sys.exit(main())
