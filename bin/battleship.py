@@ -124,6 +124,11 @@ def establish_players(args):
     for number in range(args.players):
         new_player = Player(args.gridsize, number)
         players.append(new_player)
+        if args.listing[number] == 'a':
+            players[number].ai = battleshipAI.BattleshipAI(players[number])
+        elif args.listing[number] != 'h':
+            print('UserWarning, Invalid PlayerType')
+            sys.exit(0)
     if args.simulation:
         for player in players:
             player.ai = battleshipAI.BattleshipAI(player)
@@ -179,7 +184,10 @@ def get_args():
     parser.add_argument('-g', '--gridsize', type=int, default=10, help='Grid Size')
     parser.add_argument('-a', '--auto', action='store_true', default=False, help='Auto Place Ships Randomly?')
     parser.add_argument('-s', '--simulation', action='store_true', default=False, help='Make all players AI?')
+    parser.add_argument('-l', '--listing', type=str, nargs='+', default=None, help='List of players')
     args = parser.parse_args()
+    if args.listing:
+        args.players = len(args.listing)
     return args
 
 class Player:
