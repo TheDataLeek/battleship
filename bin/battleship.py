@@ -135,6 +135,7 @@ def initialize_game(args):
     shipsizes = [5, 4, 3, 3, 2]
     for current_player in players:
         switch(current_player.name)
+        print("Please input coordinates like 'x:y:r' where r is either h or v for horizontal or vertical")
         for item in shipsizes:
             current_player.add_ship(item, args.auto)
         print current_player.grid
