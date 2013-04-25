@@ -19,10 +19,10 @@ import time
 try:
     import battleshipAI
 
-    import pygame
+#    import pygame
 
     import numpy
-    import scipy.misc
+#    import scipy.misc
     import argparse
 except ImportError:
     print 'Error, Missing Libraries'
