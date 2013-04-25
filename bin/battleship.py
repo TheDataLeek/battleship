@@ -53,11 +53,42 @@ def end_game(args):
             print('Congratulations Player %i! You have won!' %player.name)
 
     for player in players:
-        if player.get_state():
-            print("Player %i's ships:" %player.name)
-            print(player.grid)
-            print("Player %i's guesses:" %player.name)
-            print(player.guesses)
+        if args.winner:
+            if player.get_state():
+                print_grids(player)
+        else:
+            print_grids(player)
+
+        if args.filename:
+            wfile = open(args.filename, 'w')
+            for player in players:
+                if player.get_state():
+                    wfile.write('Congratulations Player %i! You have won!\n' %player.name)
+            for player in players:
+                wfile.write(format_grids(player))
+
+def format_grids(player):
+    '''
+    Prints designated player grids
+    '''
+    string = ''
+    string += ("Player %i's ships:\n" %player.name)
+    string += str((player.grid))
+    string += ("\nPlayer %i's guesses:\n" %player.name)
+    for item in player.guesses:
+        string += str(item.guesses)
+        string += '\n'
+    return string
+
+def print_grids(player):
+    '''
+    Prints designated player grids
+    '''
+    print("Player %i's ships:" %player.name)
+    print(player.grid)
+    print("Player %i's guesses:" %player.name)
+    for item in player.guesses:
+        print item.guesses
 
 def start_game(args):
     '''
@@ -69,7 +100,9 @@ def start_game(args):
         for player in players:
             if player.get_state():
                 switch(player.name)
-                print(player.guesses)
+                print('Available Grids')
+                for item in player.guesses:
+                    print item.guesses
                 if player.ai != None:
                     player.ai.shoot(players)
                 else:
@@ -124,11 +157,14 @@ def establish_players(args):
     for number in range(args.players):
         new_player = Player(args.gridsize, number)
         players.append(new_player)
-        if args.listing[number] == 'a':
-            players[number].ai = battleshipAI.BattleshipAI(players[number])
-        elif args.listing[number] != 'h':
-            print('UserWarning, Invalid PlayerType')
-            sys.exit(0)
+        if args.listing:
+            if args.listing[number] == 'a':
+                players[number].ai = battleshipAI.BattleshipAI(players[number])
+            elif args.listing[number] != 'h':
+                print('UserWarning, Invalid PlayerType')
+                sys.exit(0)
+    for item in players:
+        item.create_guess_grids()
     if args.simulation:
         for player in players:
             player.ai = battleshipAI.BattleshipAI(player)
@@ -185,6 +221,8 @@ def get_args():
     parser.add_argument('-a', '--auto', action='store_true', default=False, help='Auto Place Ships Randomly?')
     parser.add_argument('-s', '--simulation', action='store_true', default=False, help='Make all players AI?')
     parser.add_argument('-l', '--listing', type=str, nargs='+', default=None, help='List of players')
+    parser.add_argument('-w', '--winner', action='store_false', default=True, help='Display only winning stats')
+    parser.add_argument('-f', '--filename', type=str, default=None, help='File to write results')
     args = parser.parse_args()
     if args.listing:
         args.players = len(args.listing)
@@ -202,28 +240,39 @@ class Player:
         '''
         self.gridsize = gridsize
         self.grid     = gen_grid(gridsize)
-        self.guesses  = gen_grid(gridsize)
+        self.guesses  = []
         self.shiplist = []
         self.name     = name
         self.state    = True
         self.ai       = None
+
+    def create_guess_grids(self):
+        '''
+        Creates guessing grids for multiple players
+        '''
+        for item in players:
+            new_grid = Guesses(self.gridsize, item.name)
+            self.guesses.append(new_grid)
 
     def shoot(self, pid, x , y):
         '''
         Shoot at specified player at specified coordinates
         '''
         target = players[pid]
+        for item in self.guesses:
+            if item.pid == pid:
+                current_guesses = item.guesses
         for item in target.shiplist:
             result = item.register(x, y)
             if result == True:
                 print 'Hit!'
-                self.guesses[y][x] = 1
+                current_guesses[y][x] = 1
                 return None
             elif result == False:
-                if self.guesses[y][x] == 0:
-                    self.guesses[y][x] = -1
+                if current_guesses[y][x] == 0:
+                    current_guesses[y][x] = -1
             else:
-                self.guesses[y][x] = 1
+                current_guesses[y][x] = 1
                 return None
         print 'Miss!'
 
@@ -354,6 +403,14 @@ class Player:
                     if grid[self.y][self.x + number] > 0:
                         return True
             return False
+
+class Guesses:
+    '''
+    Guessing Grid Class
+    '''
+    def __init__(self, size, pid):
+        self.pid     = pid
+        self.guesses = gen_grid(size)
 
 class Screen:
     def __init__(self, player_list):
