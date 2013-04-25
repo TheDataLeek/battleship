@@ -3,13 +3,84 @@
 '''
 Battleship! The Game
 
+Will Farmer       < willzfarmer@gmail.com>
+Michael Brughelli < michael.brughelli@gmail.com>
+Tommy Gebhardt    < tommygebhardt@gmail.com>
+Catherine Dewerd  < catherine.dewerd@colorado.edu>
+
 Ship Classes:
     aircraft
     battleship
     submarine
     destroyer
     patrol
+
 '''
+r"""
+%s
+//What do you expect to find here? And if you find what you seek, will you truly be happy?
+%s
+//Thar be dragons here!
+
+
+
+                                              ,....,. 
+                                          ..''   .' 
+                                       .'"       | 
+                                    .''          \ 
+                                 .''              \. 
+                               .'                  ."., 
+                             ,:'             ..,'"'   '...,..::/""..... 
+                           /'"          .,'"'  .,',:,'""'         .,'' 
+                         ,'.'      .,'"' ..,''' ""         .'   ."' 
+                       ,'  \, ..,''  .,''. ..,'""        ./   ." 
+                     ."     .,"  .,'".,"'./           ..''   / 
+                    ,'    .'  ./'.,"'  .'  "'     ." '.     / 
+                  .'   ./' ./"."\,..,''     '" ../,     ,  | 
+                 ,   ./' .'./'|/     ............        ',| 
+                /   /' ,'.".,'""\..... '""''''''  .::/'.., | 
+               /  ." ,' ':\ ""''  |  ,      ''          '""   \ 
+              /  /'.''. |:::::::""' ,' ' ''. ".,.,  ""'    .""' 
+             | ." /.,":. ""..,   "\'.."'..  ;"'  '\.'""' ." \
+             | \.:\.    '""./\ \  | ' '" .,"".           / 
+             / \'   '"..     ", \  \,',     "'..  .,     ' 
+            /.'",''..,  '\,   '\ ". '\'.,     , "'. "'.,| 
+           .,'        '". ',    \ '.".. ''../'      "" __\ 
+           '             \,',    \  '.'\..,  ","'  .'" 
+                         |  |    '| ,\""'\/.  |  ." 
+            ."          .|  .    / / ./'. '.".' /' 
+            /'        ..|':""''\././  /   "  '/\.' 
+           //  ./  .'"    /' ./'.' .'  | ..,  ':| 
+         ./:  ,/   |",   ' ."'  :  '   |    .../:, 
+        .'.'.\/   /.'           ''  .,   ..\' 
+      .,\.\".'   /"    ,"' \...,      "\.\| ", 
+     /    ./""''   ..:    ',|  "".,     '\  ', 
+  .,' "'   \|     "".'".    '/  .| '\.     ", '\ 
+ /          \.    ../,   "./ '\ |'  \/"" '".'\  \ 
+/   '\\:.   \,"\::'  ./""'    ./|  .'     .'"/| '| 
+' ,"\:"/""''  /'  ."\'  .., |:| .| |'    .'' .\|  ', 
+|/  / /'    .'| /  |. \,    /'"/. |  |:\..," .||  \ 
+'' /.'      //\|'  '\/\:.   :,/"'::.  ,   ..::'|  | 
+            ||'/,    '\\/"\ '/|    '\ '"::::"| || . 
+            || \\       "".   ...,  '.  \\...| |' | 
+            ||  "\,         .".\, ". ', | \  '||  | 
+             '              |\|'|\/.''\ | |\  ||  | 
+                            ||\/"/| '\, ., / / /  , 
+                             ' \  "   '"  / / .' / 
+                                '      .'".' .' / 
+                                  ..'"'.." ." ." 
+                              .,"":.'""..'" ." 
+                         .,:'"'"'  .'"  ..'" 
+                       ." ."'..'""...,"' 
+                    .." "    , ""' 
+                   /  . :/"' 
+                 .'  :/' 
+                /  /' 
+               / .' 
+              / ' 
+             /.' 
+             ' 
+"""
 
 import sys
 import os
@@ -243,14 +314,12 @@ def gen_grid(size):
     return grid
 
 class Player:
-    '''
-    Player Class
-    Contains Shiplist and Grid
-    '''
-
     def __init__(self, gridsize, name):
         '''
-        Initializes a Player
+        Player Class
+        Contains Shiplist and Grid
+        :param gridsize: size of game grid
+        :param name: player id name
         '''
         self.gridsize = gridsize
         self.grid     = gen_grid(gridsize)
@@ -264,35 +333,39 @@ class Player:
         '''
         Creates guessing grids for multiple players
         '''
-        for item in players:
+        for item in players: # See Guesses() class object
             new_grid = Guesses(self.gridsize, item.name)
             self.guesses.append(new_grid)
 
     def shoot(self, pid, x , y):
         '''
         Shoot at specified player at specified coordinates
+        :param pid: Int player id
+        :param x: Int X coordinate
+        :param y: Int Y coordinate
         '''
-        target = players[pid]
-        for item in self.guesses:
+        target = players[pid]                  # establish target
+        for item in self.guesses:              # establish current target's guess grid
             if item.pid == pid:
                 current_guesses = item.guesses
-        for item in target.shiplist:
+        for item in target.shiplist:           # Iterate through shiplist and register for hits
             result = item.register(x, y)
-            if result == True:
+            if result == True:                 # Display relevant output to player
                 print 'Hit!'
-                current_guesses[y][x] = 1
+                current_guesses[y][x] = 1      # Change guess grid to show
                 return None
             elif result == False:
-                if current_guesses[y][x] == 0:
+                if current_guesses[y][x] == 0: # Change to miss only if we haven't hit there before
                     current_guesses[y][x] = -1
             else:
-                current_guesses[y][x] = 1
+                current_guesses[y][x] = 1      # If we get a string back, it means we sunk their ship
                 return None
-        print 'Miss!'
+        print 'Miss!'                          # If something odd happened, return a miss
 
     def get_rand_pos(self):
         '''
         Returns a random spot
+        :returns: formatted coordinate string
         '''
         if random.randint(0,1) == 0:
             ort = 'v'
@@ -303,62 +376,67 @@ class Player:
         return coord
 
     def add_ship(self, size, auto):
-        if auto:
+        '''
+        Add a ship to the player
+        :param size: size of the ship to add
+        :param auto: boolean to auto place ship
+        '''
+        if auto:                                                                                 # If auto, get a random spot
             coord = self.get_rand_pos()
-        else:
+        else:                                                                                    # Otherwise, get human input
             coord = raw_input('Please Enter Location for Ship with Size %i (X:Y:R): ' %size)
-        new_ship      = self.Ship(size, coord, self.gridsize)
-        ship_conflict = new_ship.conflict(self.grid)
-        start_time = time.time()
-        while ship_conflict == True:
-            current_time = time.time()
-            if current_time - start_time > 10:
+        new_ship      = self.Ship(size, coord, self.gridsize)                                    # Create a ship there
+        ship_conflict = new_ship.conflict(self.grid)                                             # Check for conflict
+        start_time = time.time()                                                                 # Initiate a timer to prevent looping
+        while ship_conflict == True:                                                             # Keep creating ships until no conflict
+            current_time = time.time()                                                           # Set current time
+            if current_time - start_time > 10:                                                   # Stop if we've gone over 10s
                 print("Timout Error")
                 sys.exit(0)
-            if auto:
+            if auto:                                                                             # Get another ship
                 coord = self.get_rand_pos()
-            else:
+            else:                                                                                # Get another ship
                 coord = raw_input('Please Enter Location for Ship with Size %i (X:Y:R): ' %size)
             new_ship      = self.Ship(size, coord, self.gridsize)
             ship_conflict = new_ship.conflict(self.grid)
 
-        [x, y, r] = coord.split(':')
+        [x, y, r] = coord.split(':')                                                             # Obtain coordinates from variable
         x = int(x)
         y = int(y)
 
-        for number in range(size):
+        for number in range(size):                                                               # Change player grid to show ship placement
             if r == 'v':
                     self.grid[y + number][x] = 1
             elif r == 'h':
                     self.grid[y][x + number] = 1
 
-        self.shiplist.append(new_ship)
-        if not auto:
+        self.shiplist.append(new_ship)                                                           # Add Ship() object to player's ship list
+        if not auto:                                                                             # If human, print placement
             print self.grid
 
     def get_state(self):
         '''
         Refreshes state and returns
+        :returns: current player state
         '''
-        if not self.state:
+        if not self.state:                # If the state is false, return false
             return self.state
-        else:
+        else:                             # Otherwise iterate through ships
             ship_state = False
             for ship in self.shiplist:
                 for item in ship.hits:
-                    if item != 0:
+                    if item != 0:         # If any ship has a hitbox left, we're alive
                         ship_state = True
             self.state = ship_state
-            return self.state
+            return self.state             # Return the player's state
 
     class Ship:
-        '''
-        Ship Class
-        '''
-
         def __init__(self, size, coord, gridsize):
             '''
-            Initializes an Aircraft Carrier
+            Ship Class
+            :param size: Integer size of ship
+            :param coord: Coordinate for the top of the ship (N/W)
+            :param gridsize: Length of the grid's side
             '''
             self.hits      = []
             self.x         = int(coord.split(':')[0])
@@ -366,73 +444,77 @@ class Player:
             self.r         = coord.split(':')[2]
             self.size      = size
             self.test_grid = gen_grid(gridsize)
-            self.state = True
+            self.state     = True
 
         def register(self, x0, y0):
             '''
             Registers a hit (or a miss)
+            :param x0: X coordinate to check
+            :param y0: Y coordinate to check
+            :returns: boolean hit reply
             '''
-            hit_confirm = False
-            for i in range(len(self.hits)):
-                if self.hits[i] == ('%i:%i' %(y0, x0)):
+            hit_confirm = False                                            # Initially assume we haven't been hit
+            for i in range(len(self.hits)):                                # Iterate through hitboxes
+                if self.hits[i] == ('%i:%i' %(y0, x0)):                    # If hitbox value == coordinate, we been hit
                     self.hits[i] = 0
                     hit_confirm = True
 
-            if hit_confirm == True:
-                self.state = False
+            if hit_confirm == True:                                        # If we been hit, determine ship's state
+                self.state = False                                         # Assume Dead initially
                 for item in self.hits:
                     if item != 0:
-                        self.state = True
-                if self.state == False:
+                        self.state = True                                  # If any hitboxes are left, we're still good baby!
+                if self.state == False:                                    # Otherwise respond with a classic message
                     hit_confirm = 'You have sunk my ship! (%i)' %self.size
-                    print hit_confirm
+                    print hit_confirm                                      # Print that sexy message
             return hit_confirm
 
         def conflict(self, grid):
             '''
             Determines if there's a conflict between two ships
+            :param grid: Player's grid to check against
             '''
-            # Establish there's room in the grid
-            if self.r == 'v':
+                                                                                           # Establish there's room in the grid
+            if self.r == 'v':                                                              # If the ship is vertical
                 try:
-                    for number in range(self.size):
+                    for number in range(self.size):                                        # Test each spot to make sure the grid has room
                         self.test_grid[self.y + number][self.x]
                         self.hits.append('%i:%i' %(self.y + number, self.x))
-                except IndexError:
+                except IndexError:                                                         # "With great ERROR comes great CONFLICT"
                     return True
-            elif self.r == 'h':
+            elif self.r == 'h':                                                            # If the ship is horizontal
                 try:
-                    for number in range(self.size):
+                    for number in range(self.size):                                        # Test each spot horizontally instead
                         self.test_grid[self.y][self.x + number]
                         self.hits.append('%i:%i' %(self.y, self.x + number))
-                except IndexError:
+                except IndexError:                                                         # "With great ERROR comes great CONFLICT"
                     return True
             else:
-                return True
+                return True                                                                # if no ERRORs, we have succeeded
 
-            # Establish we aren't running over any other ships and they're not close
-            for number in range(self.size + 1):
-                if self.r == 'v':
-                    if number == self.size:
-                        pass
-                    elif grid[self.y + number][self.x] > 0:
+                                                                                           # Establish we aren't running over any other ships and they're not close
+            for number in range(self.size + 1):                                            # Check a larger range than we have ship
+                if self.r == 'v':                                                          # If vertical
+                    if number == self.size:                                                # If we have a larger number than hitboxes
+                        pass                                                               # Skip this number
+                    elif grid[self.y + number][self.x] > 0:                                # If there's something here, return CONFLICT
                         return True
-                    try:
-                        for dom in range(-1,2):
-                            for ran in range(-1, 2):
-                                current_x = self.x + dom
-                                current_y = self.y + number + ran
-                                if grid[current_y][current_x] > 0:
-                                    if ('%i:%i' %(current_y, current_x)) not in self.hits:
+                    try:                                                                   # Now try to access every element around the ship
+                        for dom in range(-1,2):                                            # Grab every x value between [-1, 2)
+                            for ran in range(-1, 2):                                       # Grab every y value between [-1, 2)
+                                current_x = self.x + dom                                   # Establish current x value to check against
+                                current_y = self.y + number + ran                          # Establish current y value to check against
+                                if grid[current_y][current_x] > 0:                         # If anything is full, we have GREAT CONFLICT
+                                    if ('%i:%i' %(current_y, current_x)) not in self.hits: # If this is us though, ignore!
                                         return True
-                    except:
+                    except:                                                                # If we get an error, it means we ran out of grid. This is ok
                         pass
-                elif self.r == 'h':
-                    if number == self.size:
+                elif self.r == 'h':                                                        # If horizontal
+                    if number == self.size:                                                # If we gots a big number, skip it
                         pass
-                    elif grid[self.y][self.x + number] > 0:
+                    elif grid[self.y][self.x + number] > 0:                                # If there's a ship here, CONFLIIIIICT
                         return True
-                    try:
+                    try:                                                                   # Same exact code as before, except with X iterator instead of Y
                         for ran in range(-1,2):
                             for dom in range(-1, 2):
                                 current_x = self.x + number + dom
@@ -440,9 +522,9 @@ class Player:
                                 if grid[current_y][current_x] > 0:
                                     if ('%i:%i' %(current_y, current_x)) not in self.hits:
                                         return True
-                    except IndexError:
+                    except IndexError:                                                     # "With great ERROR comes great CONFLICT, but not here"
                         pass
-            return False
+            return False                                                                   # If we managed to avoid everything, WE WIN!
 
 class Guesses:
     def __init__(self, size, pid):
@@ -454,5 +536,5 @@ class Guesses:
         self.pid     = pid
         self.guesses = gen_grid(size)
 
-if __name__=="__main__":
+if __name__=="__main__": # Run our code
     sys.exit(main())
