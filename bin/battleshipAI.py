@@ -47,6 +47,7 @@ class BattleshipAI:
             if result == True:
                 self.guesses[y][x] = 1
                 self.player.guesses[y][x] = 1
+                break
             elif result == False:
                 self.guesses[y][x] = -1
                 self.player.guesses[y][x] = -1
@@ -54,3 +55,4 @@ class BattleshipAI:
                 print result
                 self.guesses[y][x] = 1
                 self.player.guesses[y][x] = 1
+                break

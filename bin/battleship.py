@@ -75,13 +75,11 @@ def start_game(args):
                 else:
                     p, x, y, = get_coords(player, args)
                     player.shoot(p,x,y)
-                raw_input('Press enter for next player')
+                    raw_input('Press enter for next player')
         num_playing = 0;
         for p in players:
             if p.get_state():
                 num_playing += 1
-
-#            raw_input("Press enter for next player")
 
 def split_coords(usr_string):
     '''
@@ -205,13 +203,13 @@ class Player:
         '''
         Shoot at specified player at specified coordinates
         '''
-
         target = players[pid]
         for item in target.shiplist:
             result = item.register(x, y)
             if result == True:
                 print 'Hit!'
                 self.guesses[y][x] = 1
+                return None
             elif result == False:
                 self.guesses[y][x] = -1
             else:
@@ -272,12 +270,12 @@ class Player:
         if not self.state:
             return self.state
         else:
+            ship_state = False
             for ship in self.shiplist:
-                ship_state = False
                 for item in ship.hits:
                     if item != 0:
                         ship_state = True
-                self.state = ship_state
+            self.state = ship_state
             return self.state
 
     class Ship:
@@ -313,8 +311,8 @@ class Player:
                     if item != 0:
                         self.state = True
                 if self.state == False:
-                    print 'You have sunk my ship! (%i)' %self.size
-            
+                    hit_confirm = 'You have sunk my ship! (%i)' %self.size
+                    print hit_confirm
             return hit_confirm
 
         def conflict(self, grid):
