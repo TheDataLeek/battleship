@@ -20,7 +20,6 @@ try:
     import battleshipAI
 
     import pygame
-    from pygame import Color, Rect, Surface
 
     import numpy
     import scipy.misc
@@ -214,6 +213,7 @@ class Player:
                 self.guesses[y][x] = -1
             else:
                 self.guesses[y][x] = 1
+                return None
         print 'Miss!'
 
     def get_rand_pos(self):
