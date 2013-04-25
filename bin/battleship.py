@@ -3,10 +3,10 @@
 '''
 Battleship! The Game
 
-Will Farmer       < willzfarmer@gmail.com>
-Michael Brughelli < michael.brughelli@gmail.com>
-Tommy Gebhardt    < tommygebhardt@gmail.com>
-Catherine Dewerd  < catherine.dewerd@colorado.edu>
+Will Farmer       <willzfarmer@gmail.com>
+Michael Brughelli <michael.brughelli@gmail.com>
+Tommy Gebhardt    <tommygebhardt@gmail.com>
+Catherine Dewerd  <catherine.dewerd@colorado.edu>
 
 Ship Classes:
     aircraft
