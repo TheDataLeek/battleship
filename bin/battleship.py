@@ -50,7 +50,7 @@ def end_game(args):
     '''
     clear_screen()
     for player in players:
-        if player.get_state:
+        if player.get_state():
             print('Congratulations Player %i! You have won!' %player.name)
 
     for player in players:
@@ -213,7 +213,6 @@ class Player:
             elif result == False:
                 self.guesses[y][x] = -1
             else:
-                print result
                 self.guesses[y][x] = 1
         print 'Miss!'
 

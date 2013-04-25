@@ -52,7 +52,6 @@ class BattleshipAI:
                 self.guesses[y][x] = -1
                 self.player.guesses[y][x] = -1
             else:
-                print result
                 self.guesses[y][x] = 1
                 self.player.guesses[y][x] = 1
                 break
