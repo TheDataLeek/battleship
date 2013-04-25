@@ -1,0 +1,30 @@
+Initial Ideas:
+
+We decided to program the game "Battleship" in python for this project.
+We chose to do this because the game would require little graphics work
+and had a predetermined and contained structure. There was a clear
+winning state and a limited number of decisions, which minimized the
+number of cases we had to account for in our code.
+
+We used python to write the code because of previous experience with 
+the language and its ease of making matricies. We easily could have
+used either java or c++, but the numpy library made our task easier.
+
+We tried to expand on the traditional battleship idea to include
+multiple board sizes, an unlimited amount of possible players, and
+an AI which one could play against.
+
+Pivots:
+
+We initially wanted to create a grid demonstrating the guesses a player
+had made by showing a '-' for locations they hadn't guessed, an 'X' for
+locations that were recorded hits, and a '0' for misses. The numpy 
+library didn't work with character inputs, so we settled instead for a
+-1 indicating miss, a 0 indicating unguessed locations, and a 1 for hits.
+
+We also initially wanted to display the sunk and alive ships of the
+target player, but we scratched that option in favor of a cleaner screen.
+
+Data Structures:
+
+Hardest part:

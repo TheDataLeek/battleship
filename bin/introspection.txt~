@@ -1,0 +1,8 @@
+Initial Ideas:
+We decided to program the game "Battleship" in python for this project.
+We chose to do this because the game would require little graphics work
+and had a predetermined and contained structure. There was a clear
+winning state and a limited number of decisions, which minimized the
+number of cases we had to account for in our code.
+We used python to write the code because of previous experience with 
+the language
