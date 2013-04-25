@@ -53,10 +53,11 @@ def end_game(args):
             print('Congratulations Player %i! You have won!' %player.name)
 
     for player in players:
-        print("Player %i's ships:" %player.name)
-        print(player.grid)
-        print("Player %i's guesses:" %player.name)
-        print(player.guesses)
+        if player.get_state():
+            print("Player %i's ships:" %player.name)
+            print(player.grid)
+            print("Player %i's guesses:" %player.name)
+            print(player.guesses)
 
 def start_game(args):
     '''
