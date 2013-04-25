@@ -11,13 +11,14 @@ class BattleshipAI:
         '''
         Artificial Intelligence Player for Battleship
         '''
-        self.name      = player.name
-        self.gridsize  = player.gridsize
-        self.guesses   = player.guesses
-        self.grid      = player.grid
-        self.player    = player
-        self.level     = random.randint(0, 2)
-        self.last_shot = None
+        self.name        = player.name
+        self.gridsize    = player.gridsize
+        self.guesses     = player.guesses
+        self.grid        = player.grid
+        self.player      = player
+        self.level       = random.randint(0, 2)
+        self.last_shot   = None
+        self.firststrike = None
 
     def is_shot(self, x, y, gridsize, pid):
         '''
@@ -77,10 +78,10 @@ class BattleshipAI:
         '''
         Follows a coordinate
         '''
-        x = self.last_shot[0]
-        y = self.last_shot[1]
-        conflict = self.is_shot(x, y, gridsize, pid)
-        num_list = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        x         = self.last_shot[0]
+        y         = self.last_shot[1]
+        conflict  = self.is_shot(x, y, gridsize, pid)
+        num_list  = [(0, 1), (1, 0), (0, -1), (-1, 0)]
         while conflict:
             for number in range(len(num_list)):
                 if num_list[number] is not None:
@@ -93,7 +94,12 @@ class BattleshipAI:
                         y = self.last_shot[1]
                     else:
                         break
-                elif num_list == [None, None, None, None]:
+            if num_list == [None, None, None, None]:
+                if self.firststrike:
+                    self.last_shot   = self.firststrike
+                    self.firststrike = None
+                    x, y = self.follow(gridsize, pid)
+                else:
                     x, y = self.get_rand_spot(gridsize, pid)
                     conflict = False
         return x, y
@@ -111,8 +117,10 @@ class BattleshipAI:
             x, y = self.follow(self.gridsize, pid)
         else:
             x, y = self.diagonal(self.gridsize, pid)
+            self.firststrike = (x, y)
         if x is False or y is False:
             x, y = self.get_rand_spot(self.gridsize, pid)
+            self.firststrike = (x, y)
         return pid, x, y
 
     def shoot(self, playerlist):
@@ -128,12 +136,13 @@ class BattleshipAI:
             result = item.register(x, y)
             if result == True:
                 current_guesses[y][x] = 1
-                self.last_shot = (x, y)
+                self.last_shot        = (x, y)
                 break
             elif result == False:
                 current_guesses[y][x] = -1
-                self.last_shot = None
+                self.last_shot        = None
+                self.firststrike      = None
             else:
                 current_guesses[y][x] = 1
-                self.last_shot = (x, y)
+                self.last_shot        = (x, y)
                 break
