@@ -66,19 +66,21 @@ def start_game(args):
     num_playing = len(players);
 
     while num_playing >= 2:
+        for player in players:
+            if player.get_state():
+                switch(player.name)
+                print(player.guesses)
+                if player.ai != None:
+                    player.ai.shoot(players)
+                else:
+                    p, x, y, = get_coords(player, args)
+                    player.shoot(p,x,y)
+                raw_input('Press enter for next player')
         num_playing = 0;
         for p in players:
             if p.get_state():
                 num_playing += 1
-        for player in players:
-            switch(player.name)
-            print(player.guesses)
-            if player.ai != None:
-                player.ai.shoot(players)
-            else:
-                p, x, y, = get_coords(player, args)
-                player.shoot(p,x,y)
-            clear_screen()
+
 #            raw_input("Press enter for next player")
 
 def split_coords(usr_string):
