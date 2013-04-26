@@ -6,7 +6,7 @@ all:
 	cp -rv ./test $(NAME)/code/
 	cp ./group.txt $(NAME)/
 	cp ./introspection.txt $(NAME)/
-	tar -czvf $(NAME).tar.gz $(NAME)
+	zip -r $(NAME).zip $(NAME)
 
 clean:
 	rm -r $(NAME)*
