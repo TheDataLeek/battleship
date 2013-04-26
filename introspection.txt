@@ -1,44 +1,50 @@
 Initial Ideas:
 
-We decided to program the game "Battleship" in python for this project.
-We chose to do this because the game would require little graphics work
-and had a predetermined and contained structure. There was a clear
-winning state and a limited number of decisions, which minimized the
-number of cases we had to account for in our code.
+We decided to do battleship after throwing around ideas for sorry!, mancala,
+hangman, pokeman and a few other games. Initially we wanted to do a pokemon
+like fighter game so we could build the ai for it, but ultimately we realized
+that that sort of game would take more time than we were willing to spend. Once
+we decided on battleship, we debated was what language we wanted to use.
+Initially C++ was chosen as the most people in the group were familiar with it,
+but we quickly realized that writing it in C++ would take a lot of code, far
+more than in python. So once we realized that there were relevant python
+libraries that would make the code shorter, the testing easier and that most of
+us were at least somewhat familiar with it, we definitely switched to python.
 
-We used python to write the code because of previous experience with 
-the language and its ease of making matrices. We easily could have
-used either java or c++, but the numpy library made our task easier.
-
-We tried to expand on the traditional battleship idea to include
-multiple board sizes, an unlimited amount of possible players, and
-an AI which one could play against.
+For the implementation of the game, we then decided on a bare bones, 2 player
+game where the users could input where to hit and be shown where they’d guessed
+previously, and could win and lose.  After completing the initial version, we
+realized that making the game multiplayer would be relatively easy and
+implemented it, though there were some problems regarding the guessing graph
+and needing to display guesses as they related to each other player, instead of
+just a record of all the guesses. We did play around with graphics, but decided
+we didn’t have time to implement them. 
 
 Pivots:
 
-We initially wanted to create a grid demonstrating the guesses a player
-had made by showing a '-' for locations they hadn't guessed, an 'X' for
-locations that were recorded hits, and a '0' for misses. The numpy 
-library didn't work with character inputs, so we settled instead for a
--1 indicating miss, a 0 indicating unguessed locations, and a 1 for hits.
+We initially wanted to create a grid demonstrating the guesses a player had
+made by showing a '-' for locations they hadn't guessed, an 'X' for locations
+that were recorded hits, and a '0' for misses. The numpy library didn't work
+with character inputs, so we settled instead for a -1 indicating miss, a 0
+indicating unguessed locations, and a 1 for hits.
 
-We also initially wanted to display the sunk and alive ships of the
-target player, but we scratched that option in favor of a cleaner screen.
+We also initially wanted to display the sunk and alive ships of the target
+player, but we scratched that option in favor of a cleaner screen.
 
 Data Structures: 
 
 We used two dimensional numerical arrays for the player grids and one
-dimensional arrays of class objects that stored data for ships, hit boxes 
-on ships, misses, and player ID name. We chose arrays because they are
-very simple to use and worked well with numpy library when setting up
-matrices for the player grids.
+dimensional arrays of class objects that stored data for ships, hit boxes on
+ships, misses, and player ID name. We chose arrays because they are very simple
+to use and worked well with numpy library when setting up matrices for the
+player grids.
 
 Hardest part:
 
-The hardest part was auto-placing ships into the grid without any
-overlapping. Another difficult aspect was incorporating the ability for
-there to be more than two players. Some of the logistics of more than
-two players was a little tricky. We had some minor bugs towards the end
-that were taken care of by running test code for extraneous circumstances
-as well as simulating games between two AI players over and over again in
-order to pinpoint the location of the issue.
+The hardest part was auto-placing ships into the grid without any overlapping.
+Another difficult aspect was incorporating the ability for there to be more
+than two players. Some of the logistics of more than two players was a little
+tricky. We had some minor bugs towards the end that were taken care of by
+running test code for extraneous circumstances as well as simulating games
+between two AI players over and over again in order to pinpoint the location of
+the issue.
