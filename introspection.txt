@@ -25,6 +25,20 @@ library didn't work with character inputs, so we settled instead for a
 We also initially wanted to display the sunk and alive ships of the
 target player, but we scratched that option in favor of a cleaner screen.
 
-Data Structures:
+Data Structures: 
+
+We used two dimensional numerical arrays for the player grids and one
+dimensional arrays of class objects that stored data for ships, hit boxes 
+on ships, misses, and player ID name.  We chose arrays because they are
+very simple to use and worked well with numpy library when setting up
+matrices for the player grids.  We could have used lists or sets.
 
 Hardest part:
+
+The hardest part was auto-placing ships into the grid without any
+overlapping.  Another difficult aspect was incorporating the ability for
+there to be more than two players.  Some of the logistics of more than
+two players was a little tricky.  We had some minor bugs towards the end
+that were taken care of by running test code for extraneous circumstances
+as well as simulating games between two AI players over and over again in
+order to pinpoint the location of the issue.
